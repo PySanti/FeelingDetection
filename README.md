@@ -34,9 +34,14 @@ La funcion pad_sequences rellena los espacios vacios de las resenias con un 0, d
 
 Es destacable mencionar que, a partir de ahora, cada resenia va a estar representada por un vector de 500 elementos, dicho valor fue seleccionado de manera completamente arbitraria.
 
-### Normalizacion
+### Escalado
 
-Se opto por un RobustScaler para la normalizacion.
-
+Se opto por normalizacion en el escalado.
 
 ## Entrenamiento y evaluación
+
+Ademas de utilizar pad_sequences, tambien utilizaremos embeddings: una tecnica que transforma cada numero (palabra) de la resenia en un vector. De este modo, las palabras semanticamente parecidas (alegre, feliz, contento, etc) estaran representadas por vectores similares. Esta tecnica permite que la red encuentre relaciones mucho mas  complejas entre las palabras.
+
+
+
+
