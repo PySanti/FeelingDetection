@@ -42,6 +42,6 @@ Se opto por normalizacion en el escalado.
 
 Ademas de utilizar pad_sequences, tambien utilizaremos embeddings: una tecnica que transforma cada numero (palabra) de la resenia en un vector. De este modo, las palabras semanticamente parecidas (alegre, feliz, contento, etc) estaran representadas por vectores similares. Esta tecnica permite que la red encuentre relaciones mucho mas  complejas entre las palabras.
 
+Este es un tipo de problema que requiere muchos mas conocimientos de los que tenemos en este momento, asi que decidi dejarlo para mas adelante.
 
-
-
+Volvere.
