@@ -136,3 +136,89 @@ X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=600)
 
 ## Entrenamiento
 
+Despues de ejecutar las primeras pruebas de hypertunning utilizando `keras_tuner` y `Hyperband` como algoritmo de busqueda, atraves del siguiente codigo:
+
+```
+# main.py
+
+from tensorflow.keras import datasets
+from utils.preprocess_data import preprocess_data
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
+from keras_tuner import Hyperband 
+from utils.model_builder import model_builder
+import numpy as np
+
+
+res_len = 600
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=res_len)
+
+
+
+tuner = Hyperband(
+    model_builder(res_len),
+    factor=3,
+    max_epochs=20,
+    objective="val_precision",
+    directory="train_results",
+    project_name="FeelingsDetection"
+)
+
+tuner.search(
+    X_train,
+    Y_train,
+    validation_data=(X_val, Y_val)
+)
+
+
+# utils/model_builder.py
+
+from tensorflow import keras
+from keras import layers, metrics
+
+def model_builder(res_len):
+    def clousure(hp):
+        net = keras.Sequential()
+
+        n_hidden_layers = hp.Int('n_hidden_layers', min_value=1, max_value=5, step=1)
+        learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
+
+        net.add(layers.InputLayer(shape=(res_len,)))
+
+        # busqueda de numero de capas optimo
+        for i in range(n_hidden_layers):
+            n_units = hp.Int(f'units_for_{i}', min_value=24, max_value=600, step=24)
+
+            # busqueda de numero de neuronas optimo por capa
+            net.add(layers.Dense(units=n_units, activation="relu"))
+
+        net.add(layers.Dense(units=1, activation='sigmoid'))
+
+        net.compile(
+            loss="crossentropy",
+            optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+            metrics=['accuracy', 'precision']
+        )
+        return net
+    return clousure
+
+
+```
+
+Obtuvimos los siguientes resultados:
+
+```
+Trial 26 Complete [00h 02m 09s]
+val_precision: 0.5098376870155334
+
+Best val_precision So Far: 0.513620913028717
+Total elapsed time: 00h 24m 18s
+```
+
+Resultados realmente lamentables.
+
+Seguramente el problema se esta dando en la representacion de los datos: el formato utilizado para nutrir a la red con las resenias no esta siendo lo suficientemente explicativo.
+
+
