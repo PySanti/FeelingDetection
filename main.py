@@ -1,21 +1,11 @@
 from tensorflow.keras import datasets
 from utils.preprocess_data import preprocess_data
-from sklearn.model_selection import train_test_split
-
-(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data()
-X_train, X_test = preprocess_data(X_train, X_test, 500)
-
-X_val, X_test, Y_val, Y_test = train_test_split(X_test, Y_test, random_state=42, stratify=Y_test, test_size=0.4)
-
-print("shape de train")
-print(X_train.shape)
-print(Y_train.shape)
-
-print("shape de val")
-print(X_val.shape)
-print(Y_val.shape)
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
 
 
-print("shape de test")
-print(X_test.shape)
-print(Y_test.shape)
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=300)
+
+
