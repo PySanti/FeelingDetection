@@ -24,17 +24,17 @@ Cada resenia tiene el siguiente formato:
 [1, 5, 198, 138, 254, 8, 967, 10, 10, 39, 4, 1158, 213, 7, 650, 7660, 1475, 213, 7, 650, 13, 215, 135, 13, 1583, 754, 2359, 133, 252, 50, 9, 49, 1104, 136, 32, 4, 1109, 304, 133, 1812, 21, 15, 191, 607, 4, 910, 552, 7, 229, 5, 226, 20, 198, 138, 10, 10, 241, 46, 7, 158]
 ```
 
-Un vector de longitud **variable** que representa la resenia. Cada numero representa una palabra
+Un vector de longitud **variable** que representa la resenia. Cada numero representa una palabra.
 
 En este contexto, los numeros que representan a las palabras, nacen de la frecuencia de aparicion en el dataset.
 
 Ademas, keras te permite a traves del parametro `num_words` en el metodo `.load_data()`, controlar la riqueza del vocabulario, ya que, con `num_words` especificas la cantidad maxima de palabras unicas, dada su frecuencia de aparicion, ejemplo:
 
-Si num_words = 10.000, estaran las palabras cuyo indice de aparicion sea <= a 10.000, mayor riqueza del vocabulario, registros mas nutritivos para la red.
+Si `num_words = 10.000`, estaran las palabras cuyo indice de aparicion sea `<= 10.000`, mayor riqueza del vocabulario, registros mas nutritivos para la red.
 
-Si num_words = 2, estaran las palabras cuyo indice de aparicion sea <= 2, menor riqueza, registros menos nutritivos.
+Si `num_words = 2`, estaran las palabras cuyo indice de aparicion sea `<= 2`, menor riqueza, registros menos nutritivos.
 
-Cabe destacar que, el modificar el num_words no cambiara la logintud promedio de las resenias, simplemente, las palabras que no entren dentro del rango establecido por `num_words` seran cambiadas por un numero reservado, en este caso **2**.
+Cabe destacar que, el modificar el `num_words` no cambiara la logintud promedio de las resenias, simplemente, las palabras que no entren dentro del rango establecido por `num_words` seran cambiadas por un numero reservado, en este caso **2**.
 
 Empezaremos utilizando `num_words = 15.000`.
 
@@ -62,7 +62,7 @@ def split_dataset(X_train, Y_train, X_test, Y_test):
 
 ```
 
-Redividimos el conjunto, para hacer que el X_train tuviese 35.000 y val + test 15.000.
+Redividimos el conjunto, para hacer que el `X_train` tuviese 35.000 y `val + test` 15.000 (50/50).
 
 
 Luego, tuvimos que hacer que todas las resenias tuviesen la misma longitud, esto lo hicimos a traves de la funcion `pad_sequences`:
@@ -92,10 +92,47 @@ def preprocess_data(X_train, X_test, X_val, pad_length):
 
 ```
 
+Basicamente, todas las resenias con una longitud menor a `pad_length` se rellena con 0s.
+
+Todas las resenias con una longitud mayor a `pad_length` se cortan.
+
+El valor de `pad_length` a utilizar (en principio), sera **600**. Despues de investigar, vimos que **600 es el valor de percentil 95 para las longitudes de las resenias**.
+
+```
+
+# codigo
+
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
+lengths = [len(i) for i in X_train]+[len(i) for i in X_test]
+print(np.percentile(lengths, 95))
+
+# salida
+
+598.0
+
+```
+
 Ademas, normalizamos de una vez.
 
-El valor de `pad_length` a utilizar (en principio), sera 300. Despues de investigar, vimos que ~95% de las resenias tienen una longitud <= 500.
 
+```
+# codigo del main.py antes de hypertunning
+
+from tensorflow.keras import datasets
+from utils.preprocess_data import preprocess_data
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
+from keras_tuner import Hyperband 
+from utils.model_builder import model_builder
+import numpy as np
+
+
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=600)
+
+```
 
 
 ## Entrenamiento
+
