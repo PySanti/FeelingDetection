@@ -239,4 +239,136 @@ Resenia convertida: [0,0,0,1,1,0,1,...]
 De este modo, cada nuevo vector representara las palabras que contiene cada resenia.
 
 
+Utilizando el siguiente codigo, preprocesamos de nuevo los datasets:
 
+```
+
+# utils/preprocess_data.py
+
+
+from keras.preprocessing.sequence import pad_sequences
+from sklearn.preprocessing import Normalizer
+import numpy as np
+
+
+
+def vectorize(seqs, num_words):
+    """
+        Convierte los conjuntos de resenias para que cada resenia
+        sea un vector de num_words dimensiones relleno de 0s,
+        pero con 1s en los indices equivalenes a los valores de las
+        palabras contenidas en la resenia original
+
+        ej:
+
+        Resenia original : [6, 4, 3]
+        Resenia convertida: [0,0,0,1,1,0,1,...]
+    """
+    results = np.zeros((len(seqs), num_words))
+    for i, seq in enumerate(seqs):
+        results[i, seq] = 1.
+    return results
+
+def preprocess_data(X_train, X_test, X_val, num_words):
+    """
+        Recibe los conjuntos retornados por keras.datasets.imdb
+        y aplica los preprocesamientos necesarios
+    """
+    X_train = vectorize(X_train, num_words)
+    X_test = vectorize(X_test, num_words)
+    X_val = vectorize(X_val, num_words)
+    return X_train, X_test, X_val
+
+# main.py
+
+from tensorflow.keras import datasets
+from utils.preprocess_data import preprocess_data
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
+from keras_tuner import Hyperband 
+from utils.model_builder import model_builder
+import numpy as np
+
+
+num_words = 10_000
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=num_words)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, num_words=num_words)
+```
+
+## Segundo intento de entrenamiento
+
+Luego, utilizando el siguiente codigo:
+
+```
+
+# utils/model_builder.py
+
+from tensorflow import keras
+from keras import layers, metrics
+
+def model_builder(num_words):
+    def clousure(hp):
+        net = keras.Sequential()
+
+        n_hidden_layers = hp.Int('n_hidden_layers', min_value=1, max_value=5, step=1)
+        learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4, 1e-5])
+
+        net.add(layers.InputLayer(shape=(num_words,)))
+
+        # busqueda de numero de capas optimo
+        for i in range(n_hidden_layers):
+            n_units = hp.Int(f'units_for_{i}', min_value=24, max_value=600, step=24)
+
+            # busqueda de numero de neuronas optimo por capa
+            net.add(layers.Dense(units=n_units, activation="relu"))
+
+        net.add(layers.Dense(units=1, activation='sigmoid'))
+
+        net.compile(
+            loss="crossentropy",
+            optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+            metrics=['accuracy', 'precision']
+        )
+        return net
+    return clousure
+
+# main.py
+
+
+from tensorflow.keras import datasets
+from utils.preprocess_data import preprocess_data
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
+from keras_tuner import Hyperband 
+from utils.model_builder import model_builder
+import numpy as np
+
+
+num_words = 10_000
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=num_words)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, num_words=num_words)
+
+
+
+tuner = Hyperband(
+    model_builder(num_words),
+    factor=3,
+    max_epochs=20,
+    objective="val_precision",
+    directory="train_results",
+    project_name="FeelingsDetection"
+)
+
+tuner.search(
+    X_train,
+    Y_train,
+    validation_data=(X_val, Y_val)
+)
+
+```
+
+Cabe destacar que modificamos el valor de `num_words = 10.000`, basicamente por que con 15.000 mi pc no podia.
+
+Obtuvimos los siguientes resultados:

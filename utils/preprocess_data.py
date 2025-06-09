@@ -2,20 +2,31 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import Normalizer
 import numpy as np
 
-def preprocess_data(X_train, X_test, X_val, pad_length):
+
+
+def vectorize(seqs, num_words):
+    """
+        Convierte los conjuntos de resenias para que cada resenia
+        sea un vector de num_words dimensiones relleno de 0s,
+        pero con 1s en los indices equivalenes a los valores de las
+        palabras contenidas en la resenia original
+
+        ej:
+
+        Resenia original : [6, 4, 3]
+        Resenia convertida: [0,0,0,1,1,0,1,...]
+    """
+    results = np.zeros((len(seqs), num_words))
+    for i, seq in enumerate(seqs):
+        results[i, seq] = 1.
+    return results
+
+def preprocess_data(X_train, X_test, X_val, num_words):
     """
         Recibe los conjuntos retornados por keras.datasets.imdb
         y aplica los preprocesamientos necesarios
     """
-    X_train = pad_sequences(X_train, maxlen=pad_length, padding="post", truncating="post")
-    X_test = pad_sequences(X_test, maxlen=pad_length, padding="post", truncating="post")
-    X_val = pad_sequences(X_val, maxlen=pad_length, padding="post", truncating="post")
-    X_train = np.array(X_train).astype("float32")
-    X_test = np.array(X_test).astype("float32")
-    X_val = np.array(X_val).astype("float32")
-
-    scaler = Normalizer()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
-    X_val = scaler.transform(X_test)
+    X_train = vectorize(X_train, num_words)
+    X_test = vectorize(X_test, num_words)
+    X_val = vectorize(X_val, num_words)
     return X_train, X_test, X_val

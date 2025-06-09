@@ -7,15 +7,15 @@ from utils.model_builder import model_builder
 import numpy as np
 
 
-res_len = 600
-(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
+num_words = 10_000
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=num_words)
 (X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
-X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=res_len)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, num_words=num_words)
 
 
 
 tuner = Hyperband(
-    model_builder(res_len),
+    model_builder(num_words),
     factor=3,
     max_epochs=20,
     objective="val_precision",
