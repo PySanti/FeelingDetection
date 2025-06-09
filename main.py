@@ -7,15 +7,24 @@ from utils.model_builder import model_builder
 import numpy as np
 
 
+res_len = 600
 (X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=15_000)
 (X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
-X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=600)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=res_len)
 
 
 
 tuner = Hyperband(
-    model_builder,
+    model_builder(res_len),
     factor=3,
     max_epochs=20,
-    objective="val_precision"
+    objective="val_precision",
+    directory="train_results",
+    project_name="FeelingsDetection"
+)
+
+tuner.search(
+    X_train,
+    Y_train,
+    validation_data=(X_val, Y_val)
 )
