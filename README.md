@@ -26,7 +26,7 @@ Cada resenia tiene el siguiente formato:
 
 Un vector de longitud **variable** que representa la resenia. Cada numero representa una palabra.
 
-En este contexto, los numeros que representan a las palabras, nacen de la frecuencia de aparicion en el dataset. Un indice n representa que la palabra es la n-esima palabra mas frecuente.
+En este contexto, los numeros que representan a las palabras, nacen de la frecuencia de aparicion en el dataset. Un indice n representa que la palabra es la n-esima palabra mas frecuente, lo que quiere decir que, **todas las palabras tienen indices diferentes**.
 
 Ademas, keras te permite a traves del parametro `num_words` en el metodo `.load_data()`, controlar la riqueza del vocabulario, ya que, con `num_words` especificas la cantidad maxima de palabras unicas, dada su frecuencia de aparicion, ejemplo:
 
@@ -134,7 +134,7 @@ X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=600)
 ```
 
 
-## Entrenamiento
+## Primer intento de entrenamiento
 
 Despues de ejecutar las primeras pruebas de hypertunning utilizando `keras_tuner` y `Hyperband` como algoritmo de busqueda, atraves del siguiente codigo:
 
@@ -220,6 +220,23 @@ Total elapsed time: 00h 24m 18s
 Resultados realmente lamentables.
 
 Seguramente el problema se esta dando en la representacion de los datos: el formato utilizado para nutrir a la red con las resenias no esta siendo lo suficientemente explicativo.
+
+
+
+## Vectorizacion
+
+Despues de investigar, vimos que una forma factible de representar las resenias es la siguiente:
+
+Teniendo en cuenta que las resenias son vectores compuestos por numeros, donde cada numero representa una palabra **diferente**, cada resenia se convertira en un vector de 15.000 valores, donde los indices de las palabras que aparecen en la resenia se convertiran en un 1 y todo el resto del vector sera un 0.
+
+Ej:
+
+```
+Resenia original : [6, 4, 3]
+Resenia convertida: [0,0,0,1,1,0,1,...]
+```
+
+De este modo, cada nuevo vector representara las palabras que contiene cada resenia.
 
 
 
