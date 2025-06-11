@@ -1,5 +1,6 @@
 from tensorflow.keras import datasets
 from utils.preprocess_data import preprocess_data
+from utils.show_train_results import show_train_results
 from utils.split_dataset import split_dataset
 import matplotlib.pyplot as plt
 from keras_tuner import Hyperband 
@@ -28,3 +29,16 @@ tuner.search(
     Y_train,
     validation_data=(X_val, Y_val)
 )
+
+best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+print("Mejor configuracion de hiperparametros ")
+print(best_hps.values)
+
+model = tuner.hypermodel.build(best_hps)
+history = model.fit(
+    X_train, Y_train,
+    validation_data=(X_val, Y_val),
+    epochs=20,  # Puedes ajustar según los resultados del tuner
+)
+
+show_train_results(history)

@@ -372,3 +372,54 @@ tuner.search(
 Cabe destacar que modificamos el valor de `num_words = 10.000`, basicamente por que con 15.000 mi pc no podia.
 
 Obtuvimos los siguientes resultados:
+
+```
+Mejor configuracion de hiperparametros 
+{'n_hidden_layers': 5, 'learning_rate': 0.01, 'units_for_0': 360, 'units_for_1': 456, 'units_for_2': 528, 'units_for_3': 360, 'units_for_4': 216, 'tuner/epochs': 7, 'tuner/initial_epoch': 3, 'tuner/bracket': 2, 'tuner/round': 1, 'tuner/trial_id': '0010'}
+Epoch 1/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 44s 39ms/step - accuracy: 0.8214 - loss: 0.4399 - precision: 0.8164 - val_accuracy: 0.8681 - val_loss: 0.3058 - val_precision: 0.8155
+Epoch 2/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9225 - loss: 0.2095 - precision: 0.9191 - val_accuracy: 0.8899 - val_loss: 0.2986 - val_precision: 0.8837
+Epoch 3/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9428 - loss: 0.1591 - precision: 0.9404 - val_accuracy: 0.8791 - val_loss: 0.3802 - val_precision: 0.9177
+Epoch 4/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9476 - loss: 0.1463 - precision: 0.9458 - val_accuracy: 0.8775 - val_loss: 0.3363 - val_precision: 0.8664
+Epoch 5/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 43s 39ms/step - accuracy: 0.9689 - loss: 0.0989 - precision: 0.9709 - val_accuracy: 0.8743 - val_loss: 0.3406 - val_precision: 0.8437
+Epoch 6/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9828 - loss: 0.0653 - precision: 0.9815 - val_accuracy: 0.8771 - val_loss: 0.5027 - val_precision: 0.8648
+Epoch 7/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9895 - loss: 0.0455 - precision: 0.9882 - val_accuracy: 0.8697 - val_loss: 0.5548 - val_precision: 0.8728
+Epoch 8/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 43s 39ms/step - accuracy: 0.9863 - loss: 0.0556 - precision: 0.9856 - val_accuracy: 0.8677 - val_loss: 0.5178 - val_precision: 0.8407
+Epoch 9/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9873 - loss: 0.0706 - precision: 0.9866 - val_accuracy: 0.8685 - val_loss: 1.4311 - val_precision: 0.8595
+Epoch 10/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 43s 39ms/step - accuracy: 0.9939 - loss: 0.0361 - precision: 0.9932 - val_accuracy: 0.8647 - val_loss: 0.6513 - val_precision: 0.8371
+Epoch 11/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 43s 39ms/step - accuracy: 0.9963 - loss: 0.0172 - precision: 0.9951 - val_accuracy: 0.8627 - val_loss: 0.7688 - val_precision: 0.8257
+Epoch 12/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9957 - loss: 0.0352 - precision: 0.9945 - val_accuracy: 0.8655 - val_loss: 0.8586 - val_precision: 0.8258
+Epoch 13/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 39ms/step - accuracy: 0.9941 - loss: 0.0193 - precision: 0.9930 - val_accuracy: 0.8671 - val_loss: 1.5382 - val_precision: 0.8507
+Epoch 14/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 42s 38ms/step - accuracy: 0.9967 - loss: 0.0197 - precision: 0.9962 - val_accuracy: 0.8712 - val_loss: 17.5349 - val_precision: 0.8531
+Epoch 15/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 44s 40ms/step - accuracy: 0.9927 - loss: 0.1041 - precision: 0.9915 - val_accuracy: 0.8607 - val_loss: 0.9648 - val_precision: 0.8285
+Epoch 16/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 45s 41ms/step - accuracy: 0.9982 - loss: 0.0081 - precision: 0.9976 - val_accuracy: 0.8651 - val_loss: 1.0509 - val_precision: 0.8428
+Epoch 17/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 51s 46ms/step - accuracy: 0.9987 - loss: 0.0063 - precision: 0.9980 - val_accuracy: 0.8672 - val_loss: 1.4332 - val_precision: 0.8538
+Epoch 18/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 43s 40ms/step - accuracy: 0.9965 - loss: 0.0153 - precision: 0.9957 - val_accuracy: 0.8659 - val_loss: 1.1646 - val_precision: 0.8661
+Epoch 19/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 45s 41ms/step - accuracy: 0.9814 - loss: 0.3687 - precision: 0.9773 - val_accuracy: 0.8585 - val_loss: 1.1425 - val_precision: 0.8205
+Epoch 20/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 46s 42ms/step - accuracy: 0.9581 - loss: 0.3564 - precision: 0.9293 - val_accuracy: 0.8252 - val_loss: 3.9447 - val_precision: 0.7567
+
+```
+
+![Imagen no encontrada](./images/2do_intento.png)
+
+Como vemos, resultados no muy estables pero bastante mejores que los anteriores.
+
