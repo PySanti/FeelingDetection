@@ -430,3 +430,181 @@ En el proximo intento, haremos los siguientes cambios:
 1- Para la representacion de los datos, ahora el vector de 10.000 elementos que representa la resenia, no solo contendra un 1 en los indices de las palabras que aparecen, sino que tendra un numero que represente la cantidad de veces que aparece la palabra en la resenia. 
 
 2- Implementaremos tecnicas de regularizacion, en este caso, l2 y Dropout.
+
+Utilizando el siguiente codigo:
+
+```
+# utils/preprocess_data.py
+
+from keras.preprocessing.sequence import pad_sequences
+from sklearn.preprocessing import Normalizer
+import numpy as np
+from collections import Counter
+
+
+
+def vectorize(seqs, num_words):
+    """
+        Convierte los conjuntos de resenias para que cada resenia
+        sea un vector de num_words dimensiones relleno de 0s,
+        pero con 1s en los indices equivalenes a los valores de las
+        palabras contenidas en la resenia original
+
+        ej:
+
+        Resenia original : [6, 4, 3]
+        Resenia convertida: [0,0,0,1,1,0,1,...]
+    """
+    results = np.zeros((len(seqs), num_words))
+    for i, seq in enumerate(seqs):
+        for a in seq:
+            results[i, a] += 1.
+    return results
+
+def preprocess_data(X_train, X_test, X_val, num_words):
+    """
+        Recibe los conjuntos retornados por keras.datasets.imdb
+        y aplica los preprocesamientos necesarios
+    """
+    X_train = vectorize(X_train, num_words)
+    X_test = vectorize(X_test, num_words)
+    X_val = vectorize(X_val, num_words)
+    return X_train, X_test, X_val
+
+# utils/model_builder.py
+
+from tensorflow import keras
+from keras import layers, metrics
+from keras import regularizers
+
+def model_builder(num_words):
+    def clousure(hp):
+        net = keras.Sequential()
+
+        n_hidden_layers = hp.Int('n_hidden_layers', min_value=1, max_value=3, step=1)
+        learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
+
+        net.add(layers.InputLayer(shape=(num_words,)))
+
+        # busqueda de numero de capas optimo
+        for i in range(n_hidden_layers):
+            n_units = hp.Int(f'units_for_{i}', min_value=48, max_value=576, step=24)
+            regu_const_value = hp.Choice(f'regu_const_{i}', values=[1e-1, 1e-2, 1e-3])
+            dropout_rate = hp.Float(f'drop_rate_{i}', min_value=0.1, max_value=0.5, step=0.05)
+
+            # busqueda de numero de neuronas optimo por capa
+            net.add(layers.Dense(
+                units=n_units, 
+                activation="relu", 
+                kernel_regularizer=regularizers.l2(regu_const_value)))
+            net.add(layers.Dropout(rate=dropout_rate))
+
+        net.add(layers.Dense(units=1, activation='sigmoid'))
+
+        net.compile(
+            loss="crossentropy",
+            optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+            metrics=['accuracy', 'precision']
+        )
+        return net
+    return clousure
+
+# main.py
+
+from tensorflow.keras import datasets
+from utils.preprocess_data import preprocess_data
+from utils.show_train_results import show_train_results
+from utils.split_dataset import split_dataset
+import matplotlib.pyplot as plt
+from keras_tuner import Hyperband 
+from utils.model_builder import model_builder
+import numpy as np
+
+
+num_words = 10_000
+(X_train, Y_train), (X_test, Y_test) = datasets.imdb.load_data(num_words=num_words)
+(X_train, Y_train), (X_test, Y_test), (X_val, Y_val) = split_dataset(X_train, Y_train, X_test, Y_test)
+X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, num_words=num_words)
+
+
+
+tuner = Hyperband(
+    model_builder(num_words),
+    factor=2,
+    max_epochs=15,
+    objective="val_precision",
+    directory="train_results",
+    project_name="FeelingsDetection"
+)
+
+tuner.search(
+    X_train,
+    Y_train,
+    validation_data=(X_val, Y_val)
+)
+
+best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+print("Mejor configuracion de hiperparametros ")
+print(best_hps.values)
+
+model = tuner.hypermodel.build(best_hps)
+history = model.fit(
+    X_train, Y_train,
+    validation_data=(X_val, Y_val),
+    epochs=20,  # Puedes ajustar según los resultados del tuner
+)
+
+show_train_results(history)
+
+```
+
+Obtuvimos los siguientes resultados:
+
+```
+Mejor configuracion de hiperparametros 
+{'n_hidden_layers': 1, 'learning_rate': 0.0001, 'units_for_0': 456, 'regu_const_0': 0.01, 'drop_rate_0': 0.35, 'units_for_1': 216, 'regu_const_1': 0.1, 'drop_rate_1': 0.25, 'units_for_2': 384, 'regu_const_2': 0.01, 'drop_rate_2': 0.5, 'tuner/epochs': 15, 'tuner/initial_epoch': 0, 'tuner/bracket': 0, 'tuner/round': 0}
+Epoch 1/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 61s 55ms/step - accuracy: 0.7642 - loss: 3.0093 - precision: 0.7654 - val_accuracy: 0.8699 - val_loss: 0.5064 - val_precision: 0.8349
+Epoch 2/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8686 - loss: 0.4903 - precision: 0.8637 - val_accuracy: 0.8752 - val_loss: 0.4537 - val_precision: 0.8410
+Epoch 3/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8789 - loss: 0.4393 - precision: 0.8716 - val_accuracy: 0.8785 - val_loss: 0.4344 - val_precision: 0.8523
+Epoch 4/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8829 - loss: 0.4259 - precision: 0.8771 - val_accuracy: 0.8829 - val_loss: 0.4193 - val_precision: 0.8825
+Epoch 5/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8851 - loss: 0.4159 - precision: 0.8812 - val_accuracy: 0.8831 - val_loss: 0.4161 - val_precision: 0.8647
+Epoch 6/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8867 - loss: 0.4052 - precision: 0.8807 - val_accuracy: 0.8825 - val_loss: 0.4109 - val_precision: 0.8679
+Epoch 7/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8872 - loss: 0.4011 - precision: 0.8821 - val_accuracy: 0.8848 - val_loss: 0.4084 - val_precision: 0.9095
+Epoch 8/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8925 - loss: 0.3951 - precision: 0.8874 - val_accuracy: 0.8881 - val_loss: 0.3932 - val_precision: 0.8870
+Epoch 9/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8925 - loss: 0.3876 - precision: 0.8885 - val_accuracy: 0.8881 - val_loss: 0.3926 - val_precision: 0.8854
+Epoch 10/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8935 - loss: 0.3795 - precision: 0.8884 - val_accuracy: 0.8871 - val_loss: 0.3928 - val_precision: 0.8736
+Epoch 11/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 61s 55ms/step - accuracy: 0.8946 - loss: 0.3792 - precision: 0.8899 - val_accuracy: 0.8896 - val_loss: 0.3872 - val_precision: 0.8710
+Epoch 12/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.8956 - loss: 0.3733 - precision: 0.8912 - val_accuracy: 0.8865 - val_loss: 0.3883 - val_precision: 0.8626
+Epoch 13/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9005 - loss: 0.3647 - precision: 0.8963 - val_accuracy: 0.8931 - val_loss: 0.3841 - val_precision: 0.8990
+Epoch 14/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9014 - loss: 0.3603 - precision: 0.8966 - val_accuracy: 0.8888 - val_loss: 0.3931 - val_precision: 0.9173
+Epoch 15/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9043 - loss: 0.3543 - precision: 0.9017 - val_accuracy: 0.8877 - val_loss: 0.3830 - val_precision: 0.8881
+Epoch 16/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9031 - loss: 0.3552 - precision: 0.8990 - val_accuracy: 0.8897 - val_loss: 0.3852 - val_precision: 0.9116
+Epoch 17/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9080 - loss: 0.3465 - precision: 0.9030 - val_accuracy: 0.8897 - val_loss: 0.3780 - val_precision: 0.8839
+Epoch 18/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9110 - loss: 0.3401 - precision: 0.9077 - val_accuracy: 0.8931 - val_loss: 0.3726 - val_precision: 0.8891
+Epoch 19/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9078 - loss: 0.3411 - precision: 0.9029 - val_accuracy: 0.8896 - val_loss: 0.3758 - val_precision: 0.9076
+Epoch 20/20
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 60s 55ms/step - accuracy: 0.9114 - loss: 0.3358 - precision: 0.9082 - val_accuracy: 0.8893 - val_loss: 0.3727 - val_precision: 0.8794
+```
+
+![Imagen no encontrada](./images/3er_intento.png)
+
+

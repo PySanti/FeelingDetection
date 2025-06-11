@@ -1,6 +1,7 @@
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.preprocessing import Normalizer
 import numpy as np
+from collections import Counter
 
 
 
@@ -18,7 +19,8 @@ def vectorize(seqs, num_words):
     """
     results = np.zeros((len(seqs), num_words))
     for i, seq in enumerate(seqs):
-        results[i, seq] = 1.
+        for a in seq:
+            results[i, a] += 1.
     return results
 
 def preprocess_data(X_train, X_test, X_val, num_words):

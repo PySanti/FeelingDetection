@@ -17,8 +17,8 @@ X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, num_words=num_w
 
 tuner = Hyperband(
     model_builder(num_words),
-    factor=3,
-    max_epochs=20,
+    factor=2,
+    max_epochs=15,
     objective="val_precision",
     directory="train_results",
     project_name="FeelingsDetection"
