@@ -608,7 +608,7 @@ Epoch 20/20
 
 ![Imagen no encontrada](./images/3er_intento.png)
 
-Mejor precision par conjunto de validacion : **91,73%**
+Mejor precision para conjunto de validacion : **91,73%**
 
 ## 4to intento
 
