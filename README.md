@@ -423,3 +423,10 @@ Epoch 20/20
 
 Como vemos, resultados no muy estables pero bastante mejores que los anteriores.
 
+## Tercer intento de entrenamiento
+
+En el proximo intento, haremos los siguientes cambios:
+
+1- Para la representacion de los datos, ahora el vector de 10.000 elementos que representa la resenia, no solo contendra un 1 en los indices de las palabras que aparecen, sino que tendra un numero que represente la cantidad de veces que aparece la palabra en la resenia. 
+
+2- Implementaremos tecnicas de regularizacion, en este caso, l2 y Dropout.
