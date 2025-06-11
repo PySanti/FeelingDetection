@@ -418,6 +418,7 @@ Epoch 20/20
 1094/1094 ━━━━━━━━━━━━━━━━━━━━ 46s 42ms/step - accuracy: 0.9581 - loss: 0.3564 - precision: 0.9293 - val_accuracy: 0.8252 - val_loss: 3.9447 - val_precision: 0.7567
 
 ```
+Mejor precision para conjunto de validacion : **91,77%**
 
 ![Imagen no encontrada](./images/2do_intento.png)
 
@@ -607,4 +608,11 @@ Epoch 20/20
 
 ![Imagen no encontrada](./images/3er_intento.png)
 
+Mejor precision par conjunto de validacion : **91,73%**
 
+## 4to intento
+
+Para este 4to intento, implementaremos las siguientes modificaciones:
+
+1- Reducir el espacio de busqueda de capas a [1,2]\
+2- Reducir espacio de busqueda para `dropout_rate` a <= 4
