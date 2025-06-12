@@ -616,3 +616,85 @@ Para este 4to intento, implementaremos las siguientes modificaciones:
 
 1- Reducir el espacio de busqueda de capas a [1,2]\
 2- Reducir espacio de busqueda para `dropout_rate` a <= 4
+
+Obtuvimos los siguientes resultados:
+
+
+```
+Mejor configuracion de hiperparametros 
+{'n_hidden_layers': 1, 'learning_rate': 0.01, 'units_for_0': 240, 'regu_const_0': 0.001, 'drop_rate_0': 0.25, 'units_for_1': 336, 'regu_const_1': 0.1, 'drop_rate_1': 0.30000000000000004, 'tuner/epochs': 15, 'tuner/initial_epoch': 0, 'tuner/bracket': 0, 'tuner/round': 0}
+
+Epoch 1/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 39s 35ms/step - accuracy: 0.7975 - loss: 0.8926 - precision: 0.7928 - val_accuracy: 0.8455 - val_loss: 0.6791 - val_precision: 0.8035
+Epoch 2/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 39s 36ms/step - accuracy: 0.8158 - loss: 0.7013 - precision: 0.8099 - val_accuracy: 0.8437 - val_loss: 0.6706 - val_precision: 0.8599
+Epoch 3/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 38s 35ms/step - accuracy: 0.8147 - loss: 0.6930 - precision: 0.7953 - val_accuracy: 0.8480 - val_loss: 0.6219 - val_precision: 0.8605
+Epoch 4/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8189 - loss: 0.6679 - precision: 0.7975 - val_accuracy: 0.8463 - val_loss: 0.6077 - val_precision: 0.8873
+Epoch 5/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8124 - loss: 0.6651 - precision: 0.7866 - val_accuracy: 0.8515 - val_loss: 0.5752 - val_precision: 0.8332
+Epoch 6/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8096 - loss: 0.6795 - precision: 0.7880 - val_accuracy: 0.8403 - val_loss: 0.6121 - val_precision: 0.7955
+Epoch 7/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8156 - loss: 0.6509 - precision: 0.7944 - val_accuracy: 0.8509 - val_loss: 0.5916 - val_precision: 0.8660
+Epoch 8/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8060 - loss: 0.6455 - precision: 0.7839 - val_accuracy: 0.8235 - val_loss: 0.6518 - val_precision: 0.7725
+Epoch 9/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.7918 - loss: 0.6498 - precision: 0.7636 - val_accuracy: 0.8268 - val_loss: 0.5787 - val_precision: 0.9128
+Epoch 10/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8045 - loss: 0.6218 - precision: 0.7873 - val_accuracy: 0.8257 - val_loss: 0.6034 - val_precision: 0.8463
+Epoch 11/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8087 - loss: 0.6199 - precision: 0.7772 - val_accuracy: 0.8524 - val_loss: 0.5450 - val_precision: 0.8201
+Epoch 12/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8114 - loss: 0.6217 - precision: 0.7842 - val_accuracy: 0.8516 - val_loss: 0.5583 - val_precision: 0.8179
+Epoch 13/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8088 - loss: 0.6158 - precision: 0.7787 - val_accuracy: 0.8567 - val_loss: 0.5544 - val_precision: 0.8867
+Epoch 14/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8049 - loss: 0.6163 - precision: 0.7865 - val_accuracy: 0.7937 - val_loss: 0.7047 - val_precision: 0.9366
+Epoch 15/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 38s 35ms/step - accuracy: 0.8038 - loss: 0.6349 - precision: 0.7810 - val_accuracy: 0.8528 - val_loss: 0.5854 - val_precision: 0.8558
+Epoch 16/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8008 - loss: 0.6230 - precision: 0.7878 - val_accuracy: 0.8461 - val_loss: 0.5819 - val_precision: 0.8125
+Epoch 17/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8087 - loss: 0.6280 - precision: 0.7836 - val_accuracy: 0.8508 - val_loss: 0.5710 - val_precision: 0.9014
+Epoch 18/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8071 - loss: 0.6176 - precision: 0.7928 - val_accuracy: 0.8472 - val_loss: 0.5764 - val_precision: 0.8328
+Epoch 19/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8070 - loss: 0.6198 - precision: 0.7766 - val_accuracy: 0.8575 - val_loss: 0.5469 - val_precision: 0.8294
+Epoch 20/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8123 - loss: 0.6228 - precision: 0.7836 - val_accuracy: 0.8536 - val_loss: 0.5624 - val_precision: 0.8605
+Epoch 21/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8124 - loss: 0.6187 - precision: 0.7799 - val_accuracy: 0.8489 - val_loss: 0.5559 - val_precision: 0.8776
+Epoch 22/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8042 - loss: 0.6188 - precision: 0.7715 - val_accuracy: 0.8523 - val_loss: 0.5786 - val_precision: 0.8694
+Epoch 23/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8031 - loss: 0.6128 - precision: 0.7687 - val_accuracy: 0.8547 - val_loss: 0.5476 - val_precision: 0.8602
+Epoch 24/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.7945 - loss: 0.6233 - precision: 0.7616 - val_accuracy: 0.8392 - val_loss: 0.6018 - val_precision: 0.8090
+Epoch 25/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.7997 - loss: 0.6218 - precision: 0.7718 - val_accuracy: 0.8432 - val_loss: 0.5521 - val_precision: 0.7913
+Epoch 26/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 34ms/step - accuracy: 0.8059 - loss: 0.6171 - precision: 0.7714 - val_accuracy: 0.8511 - val_loss: 0.5386 - val_precision: 0.8307
+Epoch 27/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8015 - loss: 0.6181 - precision: 0.7730 - val_accuracy: 0.8660 - val_loss: 0.5331 - val_precision: 0.8518
+Epoch 28/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 36s 33ms/step - accuracy: 0.8032 - loss: 0.6213 - precision: 0.7709 - val_accuracy: 0.8095 - val_loss: 0.6082 - val_precision: 0.7416
+Epoch 29/30
+1094/1094 ━━━━━━━━━━━━━━━━━━━━ 37s 33ms/step - accuracy: 0.8023 - loss: 0.6156 - precision: 0.7709 - val_accuracy: 0.8648 - val_loss: 0.5324 - val_precision: 0.8548
+Epoch 29: early stopping
+Restoring model weights from the end of the best epoch: 14.
+235/235 ━━━━━━━━━━━━━━━━━━━━ 1s 5ms/step - accuracy: 0.7800 - loss: 0.7191 - precision: 0.9160 
+
+Resultados para conjunto de test
+
+Loss : 0.7024061679840088
+Accuracy : 0.7932000160217285
+Precision : 0.9253385066986084
+
+```
+
+![Imagen no encontrada](./images/4to_intento.png)
+
+Se alcanzaron al final precisiones del **~92%**.
+

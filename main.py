@@ -1,3 +1,6 @@
+from os import wait
+from keras import callbacks
+from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras import datasets
 from utils.preprocess_data import preprocess_data
 from utils.show_train_results import show_train_results
@@ -31,14 +34,32 @@ tuner.search(
 )
 
 best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
+
 print("Mejor configuracion de hiperparametros ")
 print(best_hps.values)
+
+early_stopping = EarlyStopping(
+    monitor='val_precision',   # Métrica a monitorear (puede ser 'val_accuracy')
+    patience=15,          # Número de épocas sin mejora antes de detener
+    restore_best_weights=True , # Restaura los pesos del mejor modelo
+    mode="max",
+    verbose=1
+)
 
 model = tuner.hypermodel.build(best_hps)
 history = model.fit(
     X_train, Y_train,
     validation_data=(X_val, Y_val),
-    epochs=20,  # Puedes ajustar según los resultados del tuner
+    epochs=30,  # Puedes ajustar según los resultados del tuner
+    callbacks=[early_stopping]
 )
 
+test_loss, test_accuracy, test_precision = model.evaluate(X_test, Y_test)
+print(f"""
+Resultados para conjunto de test
+
+Loss : {test_loss}
+Accuracy : {test_accuracy}
+Precision : {test_precision}
+""")
 show_train_results(history)

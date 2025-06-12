@@ -6,7 +6,7 @@ def model_builder(num_words):
     def clousure(hp):
         net = keras.Sequential()
 
-        n_hidden_layers = hp.Int('n_hidden_layers', min_value=1, max_value=3, step=1)
+        n_hidden_layers = hp.Int('n_hidden_layers', min_value=1, max_value=2, step=1)
         learning_rate = hp.Choice('learning_rate', values=[1e-2, 1e-3, 1e-4])
 
         net.add(layers.InputLayer(shape=(num_words,)))
@@ -15,7 +15,7 @@ def model_builder(num_words):
         for i in range(n_hidden_layers):
             n_units = hp.Int(f'units_for_{i}', min_value=48, max_value=576, step=24)
             regu_const_value = hp.Choice(f'regu_const_{i}', values=[1e-1, 1e-2, 1e-3])
-            dropout_rate = hp.Float(f'drop_rate_{i}', min_value=0.1, max_value=0.5, step=0.05)
+            dropout_rate = hp.Float(f'drop_rate_{i}', min_value=0.1, max_value=0.4, step=0.05)
 
             # busqueda de numero de neuronas optimo por capa
             net.add(layers.Dense(
