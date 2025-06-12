@@ -13,32 +13,35 @@ Luego, se utilizará como función de activación `Relu` en las *hidden layers* 
 
 ## Preprocesamiento
 
-Longitud del dataset completo : `50000`
+Longitud del dataset completo: `50000`
 
-El dataset esta compuesto por resenias y un target que representa si la resenia es positiva (1) o negativa (0).
+El dataset está compuesto por reseñas y un target que representa si la reseña es positiva (1) o negativa (0).
 
 
-Cada resenia tiene el siguiente formato:
+Cada reseña tiene el siguiente formato:
+ 
 
 ```
 [1, 5, 198, 138, 254, 8, 967, 10, 10, 39, 4, 1158, 213, 7, 650, 7660, 1475, 213, 7, 650, 13, 215, 135, 13, 1583, 754, 2359, 133, 252, 50, 9, 49, 1104, 136, 32, 4, 1109, 304, 133, 1812, 21, 15, 191, 607, 4, 910, 552, 7, 229, 5, 226, 20, 198, 138, 10, 10, 241, 46, 7, 158]
 ```
 
-Un vector de longitud **variable** que representa la resenia. Cada numero representa una palabra.
+Un vector de longitud **variable** que representa la reseña. Cada número representa una palabra.
 
-En este contexto, los numeros que representan a las palabras, nacen de la frecuencia de aparicion en el dataset. Un indice n representa que la palabra es la n-esima palabra mas frecuente, lo que quiere decir que, **todas las palabras tienen indices diferentes**.
+En este contexto, los números que representan a las palabras, nacen de la frecuencia de aparición en el dataset. Un índice n representa que la palabra es la n-esima palabra más frecuente, lo que quiere decir que, **todas las palabras tienen índices diferentes**.
 
-Ademas, keras te permite a traves del parametro `num_words` en el metodo `.load_data()`, controlar la riqueza del vocabulario, ya que, con `num_words` especificas la cantidad maxima de palabras unicas, dada su frecuencia de aparicion, ejemplo:
+Además, keras te permite, a través del parámetro `num_words` en el método `.load_data()`, controlar la riqueza del vocabulario, ya que, con `num_words` específicas, la cantidad máxima de palabras únicas, dada su frecuencia de aparición. Ejemplo:
 
-Si `num_words = 10.000`, estaran las palabras cuyo indice de aparicion sea `<= 10.000`, mayor riqueza del vocabulario, registros mas nutritivos para la red.
+Si `num_words = 10.000`, estarán las palabras cuyo índice de aparición sea `<= 10.000`, mayor riqueza del vocabulario, registros más nutritivos para la red.
 
-Si `num_words = 2`, estaran las palabras cuyo indice de aparicion sea `<= 2`, menor riqueza, registros menos nutritivos.
+Si `num_words = 2`, estarán las palabras cuyo índice de aparición sea `<= 2`, menor riqueza, registros menos nutritivos.
 
-Cabe destacar que, el modificar el `num_words` no cambiara la logintud promedio de las resenias, simplemente, las palabras que no entren dentro del rango establecido por `num_words` seran cambiadas por un numero reservado, en este caso **2**.
+Cabe destacar que, al modificar el `num_words` no cambiará la longitud promedio de las reseñas. Simplemente, las palabras que no entren dentro del rango establecido por `num_words` serán cambiadas por un número reservado, en este caso **2**.
 
 Empezaremos utilizando `num_words = 15.000`.
 
-Luego, a traves del siguiente codigo:
+Luego, a través del siguiente código:
+
+
 
 ```
 from sklearn.model_selection import train_test_split
@@ -62,10 +65,13 @@ def split_dataset(X_train, Y_train, X_test, Y_test):
 
 ```
 
-Redividimos el conjunto, para hacer que el `X_train` tuviese 35.000 y `val + test` 15.000 (50/50).
+
+Volvemos a dividir el conjunto, para hacer que el `X_train` tuviese 35.000 y `val + test` 15.000 (50/50).
 
 
-Luego, tuvimos que hacer que todas las resenias tuviesen la misma longitud, esto lo hicimos a traves de la funcion `pad_sequences`:
+Luego, tuvimos que hacer que todas las reseñas tuviesen la misma longitud, esto lo hicimos a través de la función `pad_sequences`:
+
+
 
 ```
 from keras.preprocessing.sequence import pad_sequences
@@ -92,11 +98,12 @@ def preprocess_data(X_train, X_test, X_val, pad_length):
 
 ```
 
-Basicamente, todas las resenias con una longitud menor a `pad_length` se rellena con 0s.
+Básicamente, todas las reseñas con una longitud menor a `pad_length` se rellenan con 0s.
 
-Todas las resenias con una longitud mayor a `pad_length` se cortan.
+Todas las reseñas con una longitud mayor a `pad_length` se cortan.
 
-El valor de `pad_length` a utilizar (en principio), sera **600**. Despues de investigar, vimos que **600 es el valor de percentil 95 para las longitudes de las resenias**.
+El valor de `pad_length` a utilizar (en principio), será **600**. Después de investigar, vimos que **600 es el valor de percentil 95 para las longitudes de las reseñas**.
+
 
 ```
 
@@ -112,7 +119,7 @@ print(np.percentile(lengths, 95))
 
 ```
 
-Ademas, normalizamos de una vez.
+Además, normalizamos de una vez.
 
 
 ```
@@ -136,7 +143,7 @@ X_train, X_test, X_val = preprocess_data(X_train, X_test, X_val, pad_length=600)
 
 ## Primer intento de entrenamiento
 
-Despues de ejecutar las primeras pruebas de hypertunning utilizando `keras_tuner` y `Hyperband` como algoritmo de busqueda, atraves del siguiente codigo:
+Después de ejecutar las primeras pruebas de hypertunning utilizando `keras_tuner` y `Hyperband` como algoritmo de búsqueda, a través del siguiente código:
 
 ```
 # main.py
@@ -219,27 +226,27 @@ Total elapsed time: 00h 24m 18s
 
 Resultados realmente lamentables.
 
-Seguramente el problema se esta dando en la representacion de los datos: el formato utilizado para nutrir a la red con las resenias no esta siendo lo suficientemente explicativo.
+Seguramente el problema se está dando en la representación de los datos: el formato utilizado para nutrir a la red con las reseñas no está siendo lo suficientemente explicativo.
 
 
+## Vectorización
 
-## Vectorizacion
+Después de investigar, vimos que una forma factible de representar las reseñas es la siguiente:
 
-Despues de investigar, vimos que una forma factible de representar las resenias es la siguiente:
+Teniendo en cuenta que las reseñas son vectores compuestos por números, donde cada número representa una palabra **diferente**, cada reseña se convertirá en un vector de 15.000 valores, donde los índices de las palabras que aparecen en la reseña se convertirán en un 1 y todo el resto del vector será un 0.
 
-Teniendo en cuenta que las resenias son vectores compuestos por numeros, donde cada numero representa una palabra **diferente**, cada resenia se convertira en un vector de 15.000 valores, donde los indices de las palabras que aparecen en la resenia se convertiran en un 1 y todo el resto del vector sera un 0.
-
-Ej:
+Ejemplo:
 
 ```
 Resenia original : [6, 4, 3]
 Resenia convertida: [0,0,0,1,1,0,1,...]
 ```
 
-De este modo, cada nuevo vector representara las palabras que contiene cada resenia.
+De este modo, cada nuevo vector representará las palabras que contiene cada reseña.
 
 
-Utilizando el siguiente codigo, preprocesamos de nuevo los datasets:
+Utilizando el siguiente código, preprocesamos de nuevo los datasets:
+
 
 ```
 
@@ -368,8 +375,7 @@ tuner.search(
 )
 
 ```
-
-Cabe destacar que modificamos el valor de `num_words = 10.000`, basicamente por que con 15.000 mi pc no podia.
+Cabe destacar que modificamos el valor de `num_words = 10.000`, básicamente porque con 15.000 mi pc no podía.
 
 Obtuvimos los siguientes resultados:
 
@@ -418,7 +424,8 @@ Epoch 20/20
 1094/1094 ━━━━━━━━━━━━━━━━━━━━ 46s 42ms/step - accuracy: 0.9581 - loss: 0.3564 - precision: 0.9293 - val_accuracy: 0.8252 - val_loss: 3.9447 - val_precision: 0.7567
 
 ```
-Mejor precision para conjunto de validacion : **91,77%**
+
+Mejor precisión para conjunto de validación: **91,77%**
 
 ![Imagen no encontrada](./images/2do_intento.png)
 
@@ -426,13 +433,13 @@ Como vemos, resultados no muy estables pero bastante mejores que los anteriores.
 
 ## Tercer intento de entrenamiento
 
-En el proximo intento, haremos los siguientes cambios:
+En el próximo intento, haremos los siguientes cambios:
 
-1- Para la representacion de los datos, ahora el vector de 10.000 elementos que representa la resenia, no solo contendra un 1 en los indices de las palabras que aparecen, sino que tendra un numero que represente la cantidad de veces que aparece la palabra en la resenia. 
+1- Para la representación de los datos, ahora el vector de 10.000 elementos que representa la reseña, no solo contendrá un 1 en los índices de las palabras que aparecen, sino que tendrá un número que represente la cantidad de veces que aparece la palabra en la reseña. 
 
-2- Implementaremos tecnicas de regularizacion, en este caso, l2 y Dropout.
+2- Implementaremos técnicas de regularización, en este caso, l2 y Dropout.
 
-Utilizando el siguiente codigo:
+Utilizando el siguiente código:
 
 ```
 # utils/preprocess_data.py
@@ -608,17 +615,16 @@ Epoch 20/20
 
 ![Imagen no encontrada](./images/3er_intento.png)
 
-Mejor precision para conjunto de validacion : **91,73%**
+Mejor precisión para conjunto de validacion: **91,73%**
 
 ## 4to intento
 
 Para este 4to intento, implementaremos las siguientes modificaciones:
 
-1- Reducir el espacio de busqueda de capas a [1,2]\
-2- Reducir espacio de busqueda para `dropout_rate` a <= 4
+1- Reducir el espacio de búsqueda de capas a [1,2]\
+2- Reducir espacio de búsqueda para `dropout_rate` a <= 4
 
 Obtuvimos los siguientes resultados:
-
 
 ```
 Mejor configuracion de hiperparametros 
